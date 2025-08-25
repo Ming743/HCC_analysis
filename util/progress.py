@@ -4,6 +4,18 @@ import numpy as np
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
+import pandas as pd
+
+def load_data(path: str) -> pd.DataFrame:
+    """
+    讀取 CSV 資料並去掉 Hospital 和 Label 欄位
+    :param path: CSV 檔路徑
+    :return: 清理過的 DataFrame
+    """
+    df = pd.read_csv(path)
+    df = df.drop(columns=["Hospital", "Label"], errors="ignore")  # 如果欄位不存在也不報錯
+    df = df[df["event"].notna() & df["time"].notna()].copy()      # 確保 event/time 有效
+    return df
 
 def build_CO_vector(df_all: pd.DataFrame,
                     sample_feature_cols: list,
